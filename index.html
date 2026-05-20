@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistem Pakar Diagnosis Tifus</title>
+
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
+
+  body{
+    font-family: 'Segoe UI', sans-serif;
+    background:#eef2f7;
+    color:#333;
+    padding:40px 20px;
+  }
+
+  .container{
+    max-width:850px;
+    margin:auto;
+  }
+
+  .header{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+    margin-bottom:25px;
+    text-align:center;
+  }
+
+  .header h1{
+    color:#2563eb;
+    margin-bottom:8px;
+  }
+
+  .header p{
+    color:#666;
+    font-size:15px;
+  }
+
+  .rules{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-bottom:25px;
+  }
+
+  .card{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.06);
+  }
+
+  .card h3{
+    color:#2563eb;
+    margin-bottom:12px;
+    font-size:16px;
+  }
+
+  .formula{
+    background:#f3f6fb;
+    padding:12px;
+    border-radius:8px;
+    line-height:1.8;
+    font-size:14px;
+  }
+
+  .section-title{
+    margin-bottom:15px;
+    color:#2563eb;
+    font-size:20px;
+  }
+
+  .input-area{
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.06);
+    margin-bottom:25px;
+  }
+
+  .input-group{
+    margin-bottom:20px;
+  }
+
+  .input-group label{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:8px;
+    font-weight:600;
+  }
+
+  .value{
+    color:#2563eb;
+  }
+
+  input[type=range]{
+    width:100%;
+    accent-color:#2563eb;
+  }
+
+  button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.2s;
+  }
+
+  button:hover{
+    background:#1e4fd1;
+  }
+
+  .result{
+    display:none;
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.06);
+  }
+
+  .step{
+    background:#f8fafc;
+    border-left:4px solid #2563eb;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+  }
+
+  .step h4{
+    margin-bottom:8px;
+    color:#2563eb;
+  }
+
+  .math{
+    font-family:monospace;
+    background:#eef2ff;
+    padding:10px;
+    border-radius:6px;
+    margin-top:8px;
+  }
+
+  .final{
+    text-align:center;
+    margin-top:25px;
+    padding:20px;
+    border-radius:12px;
+  }
+
+  .success{
+    background:#ecfdf5;
+    color:#047857;
+  }
+
+  .danger{
+    background:#fef2f2;
+    color:#dc2626;
+  }
+
+  .final h2{
+    margin-bottom:10px;
+  }
+
+  .bar{
+    width:100%;
+    height:12px;
+    background:#ddd;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:15px;
+  }
+
+  .fill{
+    height:100%;
+    background:#2563eb;
+    width:0%;
+    transition:0.5s;
+  }
+
+  @media(max-width:700px){
+    .rules{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>Sistem Pakar Diagnosis Tifus</h1>
+    <p>Metode Certainty Factor (CF)</p>
+  </div>
+
+  <div class="rules">
+    <div class="card">
+      <h3>Aturan 1 (CF = 0.8)</h3>
+      <div class="formula">
+        IF Demam Tinggi <br>
+        AND Sakit Perut <br>
+        THEN Tifus
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Aturan 2 (CF = 0.7)</h3>
+      <div class="formula">
+        IF Lemas <br>
+        AND Mual <br>
+        AND Tidak Nafsu Makan <br>
+        THEN Tifus
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <h2 class="section-title">Input Gejala</h2>
+
+    <div class="input-group">
+      <label>Demam Tinggi <span class="value" id="v1">0.90</span></label>
+      <input type="range" min="0" max="1" step="0.01" value="0.90" id="s1" oninput="updateVal('s1','v1')">
+    </div>
+
+    <div class="input-group">
+      <label>Sakit Perut <span class="value" id="v2">0.60</span></label>
+      <input type="range" min="0" max="1" step="0.01" value="0.60" id="s2" oninput="updateVal('s2','v2')">
+    </div>
+
+    <div class="input-group">
+      <label>Lemas <span class="value" id="v3">0.70</span></label>
+      <input type="range" min="0" max="1" step="0.01" value="0.70" id="s3" oninput="updateVal('s3','v3')">
+    </div>
+
+    <div class="input-group">
+      <label>Mual <span class="value" id="v4">0.80</span></label>
+      <input type="range" min="0" max="1" step="0.01" value="0.80" id="s4" oninput="updateVal('s4','v4')">
+    </div>
+
+    <div class="input-group">
+      <label>Tidak Nafsu Makan <span class="value" id="v5">0.60</span></label>
+      <input type="range" min="0" max="1" step="0.01" value="0.60" id="s5" oninput="updateVal('s5','v5')">
+    </div>
+
+    <button onclick="hitung()">Hitung Diagnosis</button>
+  </div>
+
+  <div class="result" id="result">
+
+    <h2 class="section-title">Langkah Perhitungan</h2>
+
+    <div class="step">
+      <h4>1. Hitung CF Aturan 1</h4>
+      <div class="math" id="step1"></div>
+    </div>
+
+    <div class="step">
+      <h4>2. Hitung CF Aturan 2</h4>
+      <div class="math" id="step2"></div>
+    </div>
+
+    <div class="step">
+      <h4>3. Gabungkan CF</h4>
+      <div class="math" id="step3"></div>
+    </div>
+
+    <div class="final" id="finalBox">
+      <h2 id="diagnosa">-</h2>
+      <p id="persen">-</p>
+
+      <div class="bar">
+        <div class="fill" id="fillBar"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+function updateVal(slider, value){
+  document.getElementById(value).innerHTML =
+    parseFloat(document.getElementById(slider).value).toFixed(2);
+}
+
+function f(num){
+  return num.toFixed(4);
+}
+
+function hitung(){
+
+  let demam = parseFloat(document.getElementById('s1').value);
+  let sakit = parseFloat(document.getElementById('s2').value);
+  let lemas = parseFloat(document.getElementById('s3').value);
+  let mual = parseFloat(document.getElementById('s4').value);
+  let nafsu = parseFloat(document.getElementById('s5').value);
+
+  // aturan 1
+  let gejala1 = Math.min(demam, sakit);
+  let CF1 = gejala1 * 0.8;
+
+  // aturan 2
+  let gejala2 = Math.min(lemas, mual, nafsu);
+  let CF2 = gejala2 * 0.7;
+
+  // gabungan
+  let CFgabung = CF1 + CF2 * (1 - CF1);
+
+  let persen = (CFgabung * 100).toFixed(2);
+
+  document.getElementById('step1').innerHTML =
+    `MIN(${demam}, ${sakit}) × 0.8 = <b>${f(CF1)}</b>`;
+
+  document.getElementById('step2').innerHTML =
+    `MIN(${lemas}, ${mual}, ${nafsu}) × 0.7 = <b>${f(CF2)}</b>`;
+
+  document.getElementById('step3').innerHTML =
+    `${f(CF1)} + (${f(CF2)} × (1 - ${f(CF1)})) = <b>${f(CFgabung)}</b>`;
+
+  let diagnosa = document.getElementById('diagnosa');
+  let persenText = document.getElementById('persen');
+  let finalBox = document.getElementById('finalBox');
+
+  if(CFgabung >= 0.8){
+    diagnosa.innerHTML = "TIFUS TERDETEKSI";
+    finalBox.className = "final danger";
+  }else{
+    diagnosa.innerHTML = "BUKAN TIFUS";
+    finalBox.className = "final success";
+  }
+
+  persenText.innerHTML =
+    `Tingkat Keyakinan: <b>${persen}%</b>`;
+
+  document.getElementById('fillBar').style.width = persen + "%";
+
+  document.getElementById('result').style.display = "block";
+
+}
+
+</script>
+
+</body>
+</html>
